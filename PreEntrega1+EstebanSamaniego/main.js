@@ -1,7 +1,8 @@
 class Collection {
-  constructor(name, items) {
+  constructor(name, items, basePrice) {
     this.name = name;
     this.items = items;
+    this.basePrice = basePrice;
   }
 
   getItems(numDraws) {
@@ -10,6 +11,27 @@ class Collection {
     } else {
       return this.items;
     }
+  }
+
+  calculatePrice(numDraws) {
+    let totalPrice = this.basePrice * numDraws;
+
+    let discountMessage = "";
+
+    if (numDraws >= 10) {
+      totalPrice -= totalPrice * 0.15;
+      discountMessage = "Tienes un 15% de descuento aplicado por comprar 10 o más tiradas.";
+    } else if (numDraws >= 8) {
+      totalPrice -= totalPrice * 0.1;
+      discountMessage = "Tienes un 10% de descuento aplicado por comprar 8 o más tiradas.";
+    } else if (numDraws >= 4) {
+      totalPrice -= totalPrice * 0.05;
+      discountMessage = "Tienes un 5% de descuento aplicado por comprar 4 o más tiradas.";
+    }
+
+    const confirmMessage = `El precio total por ${numDraws} tiradas es: $${totalPrice}. ${discountMessage} ¿Deseas continuar con la compra?`;
+
+    return confirm(confirmMessage);
   }
 }
 
@@ -39,11 +61,6 @@ function welcomeClient() {
   } else {
     alert("La cantidad de tiradas no es válida. El simulador se cerrará.");
   }
-
-  // Mensaje de despedida
-  alert(
-    "¡Muchas gracias por comprar y participar en packit.pa! Regresa pronto."
-  );
 }
 
 // Función de Selección de Colección
@@ -90,7 +107,7 @@ function calculatePrice(selectedCollection, numDraws) {
       "Raheem Sterling",
       "Sadio Mané",
       "Erling Haaland",
-    ]),
+    ], 25.0),
     anime: new Collection("Anime", [
       "Monkey D. Luffy",
       "Naruto Uzumaki",
@@ -112,7 +129,7 @@ function calculatePrice(selectedCollection, numDraws) {
       "Jotaro Kujo",
       "Deku",
       "Tanjiro Kamado",
-    ]),
+    ], 20.0),
     videojuego: new Collection("Videojuegos", [
       "Solid Snake",
       "Super Mario Bros",
@@ -134,15 +151,40 @@ function calculatePrice(selectedCollection, numDraws) {
       "Vault Boy (Fallout)",
       "Sora (Kingdom Hearts)",
       "Niko Bellic (Grand Theft Auto IV)",
-    ]),
+    ], 10.0),
   };
 
   const selectedCollectionObj = collections[selectedCollection];
 
   if (selectedCollectionObj) {
     const items = selectedCollectionObj.getItems(numDraws);
+    const shouldContinue = selectedCollectionObj.calculatePrice(numDraws);
 
-    alert(`Has obtenido: ${items.join(", ")}`);
+    if (shouldContinue) {
+      alert(`Has obtenido: ${items.join(", ")}`);
+      alert("¡Gracias por tu elección! Esperamos que disfrutes de tu compra. Regresa pronto.");
+    } else {
+      // Nueva confirmación solo si el usuario elige cancelar después de continuar
+      const cancelConfirm = confirm(
+        "¿Deseas salir o volver a elegir la cantidad de tiradas?"
+      );
+
+      if (cancelConfirm) {
+        // Si el usuario eligió salir, el simulador se cierra sin mensajes adicionales.
+        return;
+      } else {
+        // Volver a seleccionar la cantidad de tiradas
+        const numDraws = parseInt(
+          prompt("¿Cuántas tiradas deseas comprar? (De 1 a 10)")
+        );
+
+        if (numDraws >= 1 && numDraws <= 10) {
+          calculatePrice(selectedCollection, numDraws);
+        } else {
+          alert("La cantidad de tiradas no es válida. El simulador se cerrará.");
+        }
+      }
+    }
   } else {
     alert(
       "¡Ups! Ha ocurrido un error, parece que no has elegido una categoría existente, inténtalo de nuevo."
