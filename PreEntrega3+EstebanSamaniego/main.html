@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Simulador de Ventas</title>
+    <title>Packit.pa Simulator</title>
     <style>
       body {
-        font-family: Arial, sans-serif;
+        font-family: "Arial", sans-serif;
         background-color: #f4f4f4;
         margin: 0;
         padding: 0;
@@ -36,7 +36,7 @@
         border-radius: 5px;
       }
 
-      .item-card {
+      .collection-card {
         border: 1px solid #ddd;
         padding: 10px;
         margin: 10px;
@@ -62,21 +62,22 @@
         background-color: #45a049;
       }
 
-      .cart-item {
-        margin-bottom: 5px;
-      }
-
-      .footer {
-        margin-top: 20px;
-        text-align: center;
+      #result {
+        display: none;
       }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="header">
-        <h2>Bienvenido al Simulador de Ventas</h2>
-        <p>Explora la tienda y agrega productos al carrito.</p>
+        <h2>Bienvenido al Packit.pa Simulator</h2>
+        <p>Explora las colecciones y agrega elementos al carrito.</p>
+      </div>
+
+      <div id="output"></div>
+
+      <div id="collections">
+        <!-- Collection cards will be added here dynamically -->
       </div>
 
       <div id="cart">
@@ -86,107 +87,212 @@
         <button onclick="showResult()">Pagar</button>
       </div>
 
-      <div id="products">
-        <!-- Product cards will be added here dynamically -->
+      <div id="result">
+        <h2>Resultado de las tiradas</h2>
+        <p id="resultItems"></p>
+        <p>Total a pagar: $<span id="resultTotal">0.00</span></p>
+        <button onclick="completePurchase()">Completar Compra</button>
       </div>
-
-      <div class="footer">
-        <p>¡Gracias por tu visita! Vuelve pronto.</p>
-      </div>
-
-      <script>
-        class Product {
-          constructor(name, price) {
-            this.name = name;
-            this.price = price;
-            this.quantity = 0;
-          }
-        }
-
-        const productsData = {
-          consoleSwitch: new Product("Nintendo Switch OLED", 350),
-          ps5: new Product("Playstation 5", 500),
-          ps4: new Product("Playstation 4", 300),
-          gameSwitch: new Product("Juego Nintendo Switch", 50),
-        };
-
-        function displayProductCards() {
-          for (const [productKey, productObj] of Object.entries(productsData)) {
-            const productCard = document.createElement("div");
-            productCard.className = "item-card";
-
-            const productTitle = document.createElement("h3");
-            productTitle.textContent = productObj.name;
-
-            const priceLabel = document.createElement("p");
-            priceLabel.textContent = `Precio: $${productObj.price}`;
-
-            const quantityLabel = document.createElement("p");
-            quantityLabel.textContent = "Cantidad:";
-
-            const quantityInput = document.createElement("span");
-            quantityInput.textContent = productObj.quantity;
-
-            const addButton = document.createElement("button");
-            addButton.textContent = "Agregar al carrito";
-            addButton.onclick = () => addToCart(productKey, 1);
-
-            productCard.appendChild(productTitle);
-            productCard.appendChild(priceLabel);
-            productCard.appendChild(quantityLabel);
-            productCard.appendChild(quantityInput);
-            productCard.appendChild(addButton);
-
-            document.getElementById("products").appendChild(productCard);
-          }
-        }
-
-        function addToCart(productKey, quantity) {
-          const productObj = productsData[productKey];
-          productObj.quantity += quantity;
-
-          if (productObj.quantity < 0) {
-            productObj.quantity = 0; // No permitir cantidades negativas
-          }
-
-          updateCartDisplay();
-        }
-
-        function updateCartDisplay() {
-          const cartItemsUl = document.getElementById("cartItems");
-          const cartTotalSpan = document.getElementById("cartTotal");
-          let total = 0;
-
-          // Clear the current cart display
-          cartItemsUl.innerHTML = "";
-
-          // Populate the cart with selected items
-          for (const [productKey, productObj] of Object.entries(productsData)) {
-            if (productObj.quantity > 0) {
-              const listItem = document.createElement("li");
-              listItem.className = "cart-item";
-              listItem.textContent = `${productObj.name} x${
-                productObj.quantity
-              } - $${productObj.price * productObj.quantity}`;
-              cartItemsUl.appendChild(listItem);
-
-              total += productObj.price * productObj.quantity;
-            }
-          }
-
-          // Update total in the cart
-          cartTotalSpan.textContent = total.toFixed(2);
-        }
-
-        function showResult() {
-          alert(
-            "¡Compra completada! ¡Gracias por tu compra! Vuelve pronto."
-          );
-        }
-
-        // Llamar a la función para mostrar las tarjetas de productos al cargar la página
-        displayProductCards();
-      </script>
     </div>
+
+    <script>
+      class Collection {
+        constructor(name, items, basePrice) {
+          this.name = name;
+          this.items = items;
+          this.basePrice = basePrice;
+          this.quantity = 0;
+        }
+
+        getItems(numDraws) {
+          if (numDraws <= this.items.length) {
+            return this.items.slice(0, numDraws);
+          } else {
+            return this.items;
+          }
+        }
+
+        calculatePrice(numDraws) {
+          let totalPrice = this.basePrice * numDraws;
+
+          let discountMessage = "";
+
+          if (numDraws >= 10) {
+            totalPrice -= totalPrice * 0.15;
+            discountMessage =
+              "Tienes un 15% de descuento aplicado por comprar 10 o más tiradas.";
+          } else if (numDraws >= 8) {
+            totalPrice -= totalPrice * 0.1;
+            discountMessage =
+              "Tienes un 10% de descuento aplicado por comprar 8 o más tiradas.";
+          } else if (numDraws >= 4) {
+            totalPrice -= totalPrice * 0.05;
+            discountMessage =
+              "Tienes un 5% de descuento aplicado por comprar 4 o más tiradas.";
+          }
+
+          const confirmMessage = `El precio total por ${numDraws} tiradas es: $${totalPrice}. ${discountMessage} ¿Deseas continuar con la compra?`;
+
+          return confirm(confirmMessage);
+        }
+      }
+
+      const collectionsData = {
+        soccer: new Collection(
+          "Soccer",
+          [
+            "Cristiano Ronaldo",
+            "Lionel Messi",
+            "Neymar",
+            "Kylian Mbappé",
+            "Mohamed Salah",
+          ],
+          25.0
+        ),
+        anime: new Collection(
+          "Anime",
+          [
+            "Monkey D. Luffy",
+            "Naruto Uzumaki",
+            "Satoru Gojo",
+            "Goku",
+            "Edward Elric",
+          ],
+          20.0
+        ),
+        videojuego: new Collection(
+          "Videojuegos",
+          [
+            "Solid Snake",
+            "Super Mario Bros",
+            "Sonic",
+            "Link (The Legend of Zelda)",
+            "Master Chief (Halo)",
+          ],
+          10.0
+        ),
+      };
+
+      function handleWelcome() {
+        const clientName = document.getElementById("clientName").value;
+        const outputDiv = document.getElementById("output");
+
+        if (clientName !== "") {
+          outputDiv.innerHTML = `Es un placer conocerte ${clientName}. Te guiaremos a través de esta experiencia. ¿Listo para probar tu suerte?`;
+        } else {
+          outputDiv.innerHTML =
+            "Que nombre tan raro, pero quienes somos para juzgar. ¡Continuemos!";
+        }
+
+        displayCollectionCards();
+      }
+
+      function displayCollectionCards() {
+        const collectionsDiv = document.getElementById("collections");
+        collectionsDiv.innerHTML = "";
+
+        for (const [collectionKey, collectionObj] of Object.entries(
+          collectionsData
+        )) {
+          const collectionCard = document.createElement("div");
+          collectionCard.className = "collection-card";
+
+          const collectionTitle = document.createElement("h3");
+          collectionTitle.textContent = collectionObj.name;
+
+          const quantityLabel = document.createElement("label");
+          quantityLabel.textContent = "Cantidad:";
+          const quantityInput = document.createElement("input");
+          quantityInput.type = "number";
+          quantityInput.value = collectionObj.quantity;
+          quantityInput.min = "0";
+
+          const addButton = document.createElement("button");
+          addButton.textContent = "Agregar al carrito";
+          addButton.onclick = () =>
+            addToCart(collectionKey, parseInt(quantityInput.value));
+
+          collectionCard.appendChild(collectionTitle);
+          collectionCard.appendChild(quantityLabel);
+          collectionCard.appendChild(quantityInput);
+          collectionCard.appendChild(addButton);
+
+          collectionsDiv.appendChild(collectionCard);
+        }
+      }
+
+      function addToCart(collectionKey, quantity) {
+        const collectionObj = collectionsData[collectionKey];
+        collectionObj.quantity += quantity;
+
+        updateCartDisplay();
+      }
+
+      function updateCartDisplay() {
+        const cartItemsUl = document.getElementById("cartItems");
+        const cartTotalSpan = document.getElementById("cartTotal");
+        let total = 0;
+
+        cartItemsUl.innerHTML = "";
+
+        for (const [collectionKey, collectionObj] of Object.entries(
+          collectionsData
+        )) {
+          if (collectionObj.quantity > 0) {
+            const listItem = document.createElement("li");
+            listItem.textContent = `${collectionObj.name} x${collectionObj.quantity}`;
+            cartItemsUl.appendChild(listItem);
+
+            total += collectionObj.basePrice * collectionObj.quantity;
+          }
+        }
+
+        // Update total in the cart
+        cartTotalSpan.textContent = total.toFixed(2);
+      }
+
+      function showResult() {
+        const resultDiv = document.getElementById("result");
+        const resultItemsP = document.getElementById("resultItems");
+        const resultTotalSpan = document.getElementById("resultTotal");
+        let resultItems = [];
+
+        for (const [collectionKey, collectionObj] of Object.entries(
+          collectionsData
+        )) {
+          if (collectionObj.quantity > 0) {
+            const items = collectionObj.getItems(collectionObj.quantity);
+            resultItems.push(`${collectionObj.name}: ${items.join(", ")}`);
+          }
+        }
+
+        resultItemsP.textContent = resultItems.join("\n");
+        resultTotalSpan.textContent =
+          document.getElementById("cartTotal").textContent;
+
+        document.getElementById("collections").style.display = "none";
+        document.getElementById("cart").style.display = "none";
+        resultDiv.style.display = "block";
+      }
+
+      function completePurchase() {
+        resetState();
+        alert("Compra completada. ¡Gracias por tu compra!");
+      }
+
+      function resetState() {
+        for (const [collectionKey, collectionObj] of Object.entries(
+          collectionsData
+        )) {
+          collectionObj.quantity = 0;
+        }
+
+        document.getElementById("result").style.display = "none";
+        document.getElementById("collections").style.display = "block";
+        document.getElementById("cart").style.display = "block";
+
+        updateCartDisplay();
+      }
+    </script>
   </body>
 </html>
