@@ -1,10 +1,192 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PreEntrega1 de Esteban Samaniego</title>
-    <script src="main.js"></script>
+    <title>Simulador de Ventas</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      #cart {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin: 10px;
+        width: 200px;
+        float: right;
+        background-color: #fff;
+        border-radius: 5px;
+      }
+
+      .item-card {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin: 10px;
+        width: 200px;
+        display: inline-block;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      }
+
+      button {
+        display: block;
+        margin: 10px auto;
+        padding: 5px 10px;
+        cursor: pointer;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      .cart-item {
+        margin-bottom: 5px;
+      }
+
+      .footer {
+        margin-top: 20px;
+        text-align: center;
+      }
+    </style>
   </head>
-  <body></body>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>Bienvenido al Simulador de Ventas</h2>
+        <p>Explora la tienda y agrega productos al carrito.</p>
+      </div>
+
+      <div id="cart">
+        <h3>Carrito</h3>
+        <ul id="cartItems"></ul>
+        <p>Total: $<span id="cartTotal">0.00</span></p>
+        <button onclick="showResult()">Pagar</button>
+      </div>
+
+      <div id="products">
+        <!-- Product cards will be added here dynamically -->
+      </div>
+
+      <div class="footer">
+        <p>¡Gracias por tu visita! Vuelve pronto.</p>
+      </div>
+
+      <script>
+        class Product {
+          constructor(name, price) {
+            this.name = name;
+            this.price = price;
+            this.quantity = 0;
+          }
+        }
+
+        const productsData = {
+          consoleSwitch: new Product("Nintendo Switch OLED", 350),
+          ps5: new Product("Playstation 5", 500),
+          ps4: new Product("Playstation 4", 300),
+          gameSwitch: new Product("Juego Nintendo Switch", 50),
+        };
+
+        function displayProductCards() {
+          for (const [productKey, productObj] of Object.entries(productsData)) {
+            const productCard = document.createElement("div");
+            productCard.className = "item-card";
+
+            const productTitle = document.createElement("h3");
+            productTitle.textContent = productObj.name;
+
+            const priceLabel = document.createElement("p");
+            priceLabel.textContent = `Precio: $${productObj.price}`;
+
+            const quantityLabel = document.createElement("p");
+            quantityLabel.textContent = "Cantidad:";
+
+            const quantityInput = document.createElement("span");
+            quantityInput.textContent = productObj.quantity;
+
+            const addButton = document.createElement("button");
+            addButton.textContent = "Agregar al carrito";
+            addButton.onclick = () => addToCart(productKey, 1);
+
+            productCard.appendChild(productTitle);
+            productCard.appendChild(priceLabel);
+            productCard.appendChild(quantityLabel);
+            productCard.appendChild(quantityInput);
+            productCard.appendChild(addButton);
+
+            document.getElementById("products").appendChild(productCard);
+          }
+        }
+
+        function addToCart(productKey, quantity) {
+          const productObj = productsData[productKey];
+          productObj.quantity += quantity;
+
+          if (productObj.quantity < 0) {
+            productObj.quantity = 0; // No permitir cantidades negativas
+          }
+
+          updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+          const cartItemsUl = document.getElementById("cartItems");
+          const cartTotalSpan = document.getElementById("cartTotal");
+          let total = 0;
+
+          // Clear the current cart display
+          cartItemsUl.innerHTML = "";
+
+          // Populate the cart with selected items
+          for (const [productKey, productObj] of Object.entries(productsData)) {
+            if (productObj.quantity > 0) {
+              const listItem = document.createElement("li");
+              listItem.className = "cart-item";
+              listItem.textContent = `${productObj.name} x${
+                productObj.quantity
+              } - $${productObj.price * productObj.quantity}`;
+              cartItemsUl.appendChild(listItem);
+
+              total += productObj.price * productObj.quantity;
+            }
+          }
+
+          // Update total in the cart
+          cartTotalSpan.textContent = total.toFixed(2);
+        }
+
+        function showResult() {
+          alert(
+            "¡Compra completada! ¡Gracias por tu compra! Vuelve pronto."
+          );
+        }
+
+        // Llamar a la función para mostrar las tarjetas de productos al cargar la página
+        displayProductCards();
+      </script>
+    </div>
+  </body>
 </html>
