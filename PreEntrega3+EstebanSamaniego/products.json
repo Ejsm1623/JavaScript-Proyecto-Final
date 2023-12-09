@@ -1,0 +1,30 @@
+[
+  {
+    "nombre": "PlayStation 5",
+    "imagen": "./imgs/PS5Console.jpg",
+    "descripcion": "Juegos sorprendentes, gráficos impresionantes...",
+    "precio": 599.99,
+    "stock": 3
+  },
+  {
+    "nombre": "Xiaomi N10",
+    "imagen": "./imgs/XiaomiN10.jpg",
+    "descripcion": "Some quick example text to build on the card title...",
+    "precio": 299.99,
+    "stock": 10
+  },
+  {
+    "nombre": "Nintendo Switch",
+    "imagen": "./imgs/NintendoSwitch.jpg",
+    "descripcion": "Some quick example text to build on the card title...",
+    "precio": 399.99,
+    "stock": 5
+  },
+  {
+    "nombre": "Dell Showcase",
+    "imagen": "./imgs/dellShowcase.jpg",
+    "descripcion": "Some quick example text to build on the card title...",
+    "precio": 799.99,
+    "stock": 2
+  }
+]

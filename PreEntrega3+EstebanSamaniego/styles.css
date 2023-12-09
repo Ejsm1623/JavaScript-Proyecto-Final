@@ -1,0 +1,29 @@
+body {
+  background-color: #111;
+}
+
+.bannerImage {
+height: 325px;
+background-color: aquamarine;
+background-image: url("./imgs/bannerImage.jpg");
+background-size: cover;
+background-repeat: none;
+}
+
+header {
+  background-color: black;
+}
+
+.custom-card-image {
+  height: 200px;
+}
+
+.card {
+  color: white !important;
+  background-color: #111 !important;
+  box-shadow: 0px 0px 15px #3116b1 !important;
+}
+
+.btn {
+  background-color: #3919c4 !important;
+}
