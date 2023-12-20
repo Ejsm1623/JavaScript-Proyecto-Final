@@ -1,29 +1,34 @@
+// main.js
+
 const productos = [
   {
     nombre: "PlayStation 5",
     imagen: "./imgs/PS5Console.jpg",
-    descripcion: "Juegos sorprendentes, gráficos impresionantes...",
+    descripcion:
+      "Consola de última generación, gráficos impresionantes, mandos reactivos.",
     precio: 599.99,
     stock: 10,
   },
   {
     nombre: "Xiaomi N10",
     imagen: "./imgs/XiaomiN10.jpg",
-    descripcion: "Some quick example text to build on the card title...",
+    descripcion:
+      "Vanguardia en celulares, comunicación total, fluidez en el gaming.",
     precio: 299.99,
     stock: 20,
   },
   {
     nombre: "Nintendo Switch",
     imagen: "./imgs/NintendoSwitch.jpg",
-    descripcion: "Some quick example text to build on the card title...",
+    descripcion:
+      "Consola de sobremesa y portatil, especial para niños y familia.",
     precio: 399.99,
     stock: 15,
   },
   {
     nombre: "Dell Showcase",
     imagen: "./imgs/dellShowcase.jpg",
-    descripcion: "Some quick example text to build on the card title...",
+    descripcion: "Lo justo y potente para labores, disfrute y ocio.",
     precio: 799.99,
     stock: 5,
   },
@@ -31,6 +36,7 @@ const productos = [
 
 document.addEventListener("DOMContentLoaded", () => {
   let productosOriginales = [];
+  let productos = [];
 
   // Cargar datos desde el archivo JSON
   fetch("products.json")
@@ -42,10 +48,10 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .then((data) => {
       productosOriginales = data;
-      const productos = [...productosOriginales]; // Copiar los productos originales
+      productos = [...productosOriginales]; // Copiar los productos originales
       generarTarjetas(productos);
 
-      // Agregar eventos a los botones
+      // Agregar eventos a los botones (fuera de la función generarTarjetas)
       document
         .getElementById("btnFiltrarPrecio")
         .addEventListener("click", () => {
@@ -67,7 +73,15 @@ document.addEventListener("DOMContentLoaded", () => {
           generarTarjetas(productosOriginales);
         });
     })
-    .catch((error) => console.error("Error al cargar los datos:", error));
+    .catch((error) => {
+      console.error("Error al cargar los datos:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un error al cargar los datos. Por favor, inténtalo de nuevo más tarde.",
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
+    });
 
   function generarTarjetas(productos) {
     const contenedor = document.getElementById("productos").lastElementChild;
@@ -75,23 +89,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const limiteTarjetas = 4;
 
-    productos.slice(0, limiteTarjetas).forEach((producto) => {
+    productos.slice(0, limiteTarjetas).forEach((producto, index) => {
       const card = document.createElement("div");
       card.className = "col";
       card.innerHTML = `
-            <div class="card h-100">
-            <img src="${producto.imagen}" class="card-img-top custom-card-image" alt="${producto.nombre}" style="height: 200px; object-fit: cover;" />
-            <div class="card-body">
-                <h5 class="card-title">${producto.nombre}</h5>
-                <p class="card-text">${producto.descripcion}</p>
-                <p class="card-text"><strong>Precio:</strong> $${producto.precio}</p>
-                <p class="card-text"><strong>Stock:</strong> ${producto.stock}</p>
-                <a href="#" class="btn btn-primary w-100">Añadir al carrito</a>
-            </div>
-            </div>
-        `;
+        <div class="card h-100">
+          <img src="${producto.imagen}" class="card-img-top custom-card-image" alt="${producto.nombre}" style="height: 200px; object-fit: cover;" />
+          <div class="card-body">
+            <h5 class="card-title">${producto.nombre}</h5>
+            <p class="card-text">${producto.descripcion}</p>
+            <p class="card-text"><strong>Precio:</strong> $${producto.precio}</p>
+            <p class="card-text"><strong>Stock:</strong> ${producto.stock}</p>
+            <button class="btn btn-primary w-100 btnAgregarCarrito" data-index="${index}">Añadir al carrito</button>
+          </div>
+        </div>
+      `;
 
       contenedor.appendChild(card);
+    });
+
+    // Asocia la función agregarAlCarrito a los botones "Añadir al carrito"
+    const botonesAgregar = document.querySelectorAll(".btnAgregarCarrito");
+    botonesAgregar.forEach((boton) => {
+      boton.addEventListener("click", (event) => {
+        const index = event.target.dataset.index;
+        const producto = productos[index];
+
+        if (producto.stock > 0) {
+          agregarAlCarrito(producto);
+          producto.stock--; // Decrementar el stock al agregar al carrito
+          generarTarjetas(productos); // Volver a generar las tarjetas con el stock actualizado
+        } else {
+          Swal.fire({
+            title: "Sin Stock",
+            text: "Este producto está agotado.",
+            icon: "info",
+            confirmButtonText: "Ok",
+          });
+        }
+      });
     });
   }
 
@@ -106,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // SweetAlert2 para dar la bienvenida
   Swal.fire({
     title: "¡Bienvenido a Next Gen Shop!",
-    text: "Nos encontramos en remodelación, pero puedes probar un poco de la interacción con los botones de filtro. Pronto estaremos abiertos al público con un mayor catalogo, no te lo pierdas.",
+    text: "Nos encontramos en remodelación, pero puedes probar un poco de la interacción con los botones de filtro. Pronto estaremos abiertos al público con un mayor catálogo, no te lo pierdas.",
     icon: "info",
     confirmButtonText: "Entendido",
   });

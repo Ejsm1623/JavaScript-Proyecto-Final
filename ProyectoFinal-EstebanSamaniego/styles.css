@@ -3,11 +3,11 @@ body {
 }
 
 .bannerImage {
-height: 325px;
-background-color: aquamarine;
-background-image: url("./imgs/bannerImage.jpg");
-background-size: cover;
-background-repeat: none;
+  height: 325px;
+  background-color: aquamarine;
+  background-image: url("./imgs/bannerImage.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 header {
@@ -19,11 +19,18 @@ header {
 }
 
 .card {
-  color: white !important;
-  background-color: #111 !important;
-  box-shadow: 0px 0px 15px #3116b1 !important;
+  color: white;
+  background-color: #111;
+  box-shadow: 0 0 15px #3116b1;
 }
 
 .btn {
-  background-color: #3919c4 !important;
+  background-color: #3919c4;
+  color: white;
+}
+
+/*Estilos para Carrito de Compras*/
+
+.list-group {
+  max-width: 100% !important;
 }

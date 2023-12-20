@@ -9,21 +9,21 @@
   {
     "nombre": "Xiaomi N10",
     "imagen": "./imgs/XiaomiN10.jpg",
-    "descripcion": "Some quick example text to build on the card title...",
+    "descripcion": "Vanguardia en celulares, comunicación total, fluidez en el gaming.",
     "precio": 299.99,
     "stock": 10
   },
   {
     "nombre": "Nintendo Switch",
     "imagen": "./imgs/NintendoSwitch.jpg",
-    "descripcion": "Some quick example text to build on the card title...",
+    "descripcion": "Consola de sobremesa y portatil, especial para niños y familia.",
     "precio": 399.99,
     "stock": 5
   },
   {
     "nombre": "Dell Showcase",
     "imagen": "./imgs/dellShowcase.jpg",
-    "descripcion": "Some quick example text to build on the card title...",
+    "descripcion": "Lo justo y potente para labores, disfrute y ocio.",
     "precio": 799.99,
     "stock": 2
   }
